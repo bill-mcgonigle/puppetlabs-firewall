@@ -146,7 +146,7 @@ installed.
     * Supported features: address_type, clusterip, connection_limiting, conntrack, dnat, icmp_match,
     interface_match, iprange, ipsec_dir, ipsec_policy, ipset, iptables, isfragment, length,
     log_level, log_prefix, log_uid, log_tcp_sequence, log_tcp_options, log_ip_options,
-    mark, mask, mss, netmap, nflog_group, nflog_prefix,
+    mark, mask, mss, netmap, nfacct, nflog_group, nflog_prefix,
     nflog_range, nflog_threshold, owner, pkttype, queue_bypass, queue_num, rate_limiting,
     recent_limiting, reject_type, snat, socket, state_match, string_matching, tcp_flags, bpf.
 
@@ -202,6 +202,8 @@ installed.
   * mark: The ability to match or set the netfilter mark value associated with the packet.
 
   * mask: The ability to match recent rules based on the ipv4 mask.
+
+  * nfacct: The ability to increment nfacct(8) counters for matched packets.
 
   * nflog_group: The ability to set the group number for NFLOG.
 
@@ -899,6 +901,11 @@ the same goes for 28- or 29-day February.
 ##### `mss`
 
 Match a given TCP MSS value or range.
+
+##### `nfacct`
+
+Match any packet with other named properties and increment the named counter.
+The counter must have already been set up with nfacct(8).
 
 ##### `nflog_group`
 
