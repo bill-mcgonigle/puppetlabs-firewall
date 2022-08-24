@@ -51,7 +51,6 @@ Puppet::Type.type(:firewall).provide :iptables, parent: Puppet::Provider::Firewa
   has_feature :queue_bypass
   has_feature :ipvs
   has_feature :ct_target
-  has_feature :nfacct
 
   optional_commands(iptables: 'iptables',
                     iptables_save: 'iptables-save')
@@ -75,6 +74,7 @@ Puppet::Type.type(:firewall).provide :iptables, parent: Puppet::Provider::Firewa
   if (kernelversion && Puppet::Util::Package.versioncmp(kernelversion, '3.3') >= 0) &&
      (iptables_version && Puppet::Util::Package.versioncmp(iptables_version, '1.4.13') >= 0)
     has_feature :rpfilter
+    has_feature :nfacct
   end
 
   @protocol = 'IPv4'
@@ -829,8 +829,6 @@ Puppet::Type.type(:firewall).provide :iptables, parent: Puppet::Provider::Firewa
     [:nflog_group, :nflog_prefix, :nflog_threshold, :nflog_range].each do |nflog_feature|
       raise "#{nflog_feature} is not available on iptables version #{iptables_version}" if resource[nflog_feature] && (iptables_version && iptables_version < '1.3.7')
     end
-
-    raise "nfacct is not available on iptables version #{iptables_version}" if resource[nfacct] && (iptables_version && iptables_version < '1.4.13')
 
     [:dst_type, :src_type].each do |prop|
       next unless resource[prop]
