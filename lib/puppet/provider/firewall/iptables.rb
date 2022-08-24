@@ -51,6 +51,7 @@ Puppet::Type.type(:firewall).provide :iptables, parent: Puppet::Provider::Firewa
   has_feature :queue_bypass
   has_feature :ipvs
   has_feature :ct_target
+  has_feature :nfacct
 
   optional_commands(iptables: 'iptables',
                     iptables_save: 'iptables-save')
@@ -126,6 +127,7 @@ Puppet::Type.type(:firewall).provide :iptables, parent: Puppet::Provider::Firewa
     match_mark: '-m mark --mark',
     mss: '-m tcpmss --mss',
     name: '-m comment --comment',
+    nfacct: '-m nfacct --nfacct-name',
     nflog_group: '--nflog-group',
     nflog_prefix: '--nflog-prefix',
     nflog_range: '--nflog-range',
@@ -357,7 +359,8 @@ Puppet::Type.type(:firewall).provide :iptables, parent: Puppet::Provider::Firewa
     :month_days, :week_days, :date_start, :date_stop, :time_contiguous, :kernel_timezone,
     :src_cc, :dst_cc, :hashlimit_upto, :hashlimit_above, :hashlimit_name, :hashlimit_burst,
     :hashlimit_mode, :hashlimit_srcmask, :hashlimit_dstmask, :hashlimit_htable_size,
-    :hashlimit_htable_max, :hashlimit_htable_expire, :hashlimit_htable_gcinterval, :bytecode, :ipvs, :zone, :helper, :cgroup, :rpfilter, :condition, :name, :notrack
+    :hashlimit_htable_max, :hashlimit_htable_expire, :hashlimit_htable_gcinterval, :bytecode, :ipvs, :zone, :helper, :cgroup, :rpfilter, :condition, :name, :notrack,
+    :nfacct,
   ]
 
   def insert
@@ -826,6 +829,8 @@ Puppet::Type.type(:firewall).provide :iptables, parent: Puppet::Provider::Firewa
     [:nflog_group, :nflog_prefix, :nflog_threshold, :nflog_range].each do |nflog_feature|
       raise "#{nflog_feature} is not available on iptables version #{iptables_version}" if resource[nflog_feature] && (iptables_version && iptables_version < '1.3.7')
     end
+
+    raise "nfacct is not available on iptables version #{iptables_version}" if resource[nfacct] && (iptables_version && iptables_version < '1.4.13')
 
     [:dst_type, :src_type].each do |prop|
       next unless resource[prop]
