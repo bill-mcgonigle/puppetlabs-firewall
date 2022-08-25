@@ -49,7 +49,7 @@ Puppet::Type.newtype(:firewall) do
         * Supported features: address_type, clusterip, connection_limiting, conntrack, dnat, icmp_match,
         interface_match, iprange, ipsec_dir, ipsec_policy, ipset, iptables, isfragment, length,
         log_level, log_prefix, log_uid, log_tcp_sequence, log_tcp_options, log_ip_options,
-        mark, mask, mss, netmap, nflog_group, nflog_prefix,
+        mark, mask, mss, netmap, nfacct, nflog_group, nflog_prefix,
         nflog_range, nflog_threshold, owner, pkttype, queue_bypass, queue_num, rate_limiting,
         recent_limiting, reject_type, snat, socket, state_match, string_matching, tcp_flags, bpf.
 
@@ -105,6 +105,8 @@ Puppet::Type.newtype(:firewall) do
       * mark: The ability to match or set the netfilter mark value associated with the packet.
 
       * mask: The ability to match recent rules based on the ipv4 mask.
+   
+      * nfacct: The ability to increment an nfacct(8) counter for matching rule.
 
       * nflog_group: The ability to set the group number for NFLOG.
 
@@ -199,6 +201,7 @@ Puppet::Type.newtype(:firewall) do
   feature :ipvs, 'Packet belongs to an IP Virtual Server connection'
   feature :ct_target, 'The ability to set connection tracking parameters for a packet or its associated connection'
   feature :random_fully, 'The ability to use --random-fully flag'
+  feature :nfacct, 'Count packets that match rule'
   # provider specific features
   feature :iptables, 'The provider provides iptables features.'
 
@@ -917,6 +920,12 @@ Puppet::Type.newtype(:firewall) do
         value
       end
     end
+  end
+
+  newproperty(:nfacct, required_features: :nfacct) do
+    desc <<-PUPPETCODE
+      Increment count of matching packets for object names configured in nfacct(8).
+    PUPPETCODE
   end
 
   # ICMP matching property
@@ -1874,8 +1883,8 @@ Puppet::Type.newtype(:firewall) do
     PUPPETCODE
     newvalues(%r{^([0-9a-f]{2}[:]){5}([0-9a-f]{2})$}i)
     facter_os_name = Facter.value(:os)['name'].downcase
-    facter_os_release = Facter.value(:os)['release']['major']
-    if ['ubuntu-22.04', 'debian-11', 'sles-15'].include?("#{facter_os_name}-#{facter_os_release}")
+    facter_os_release = Facter.value(:os)['release']['major'].to_i
+    if ['debian-11', 'sles-15'].include?("#{facter_os_name}-#{facter_os_release}")
       munge do |value|
         _value = value.downcase
       end
