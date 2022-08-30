@@ -71,7 +71,7 @@ Puppet::Type.type(:firewall).provide :iptables, parent: Puppet::Provider::Firewa
     has_feature :random_fully
   end
 
-  if (kernelversion && Puppet::Util::Package.versioncmp(kernelversion, '3.3') >= 0) &&
+  if (kernelversion && Puppet::Util::Package.versioncmp(kernelversion, '3.3') >= 0) and
      (iptables_version && Puppet::Util::Package.versioncmp(iptables_version, '1.4.13') >= 0)
     has_feature :rpfilter
     has_feature :nfacct
@@ -359,8 +359,8 @@ Puppet::Type.type(:firewall).provide :iptables, parent: Puppet::Provider::Firewa
     :month_days, :week_days, :date_start, :date_stop, :time_contiguous, :kernel_timezone,
     :src_cc, :dst_cc, :hashlimit_upto, :hashlimit_above, :hashlimit_name, :hashlimit_burst,
     :hashlimit_mode, :hashlimit_srcmask, :hashlimit_dstmask, :hashlimit_htable_size,
-    :hashlimit_htable_max, :hashlimit_htable_expire, :hashlimit_htable_gcinterval, :bytecode, :ipvs, :zone, :helper, :cgroup, :rpfilter, :condition, :name, :notrack,
-    :nfacct,
+    :hashlimit_htable_max, :hashlimit_htable_expire, :hashlimit_htable_gcinterval,
+    :bytecode, :ipvs, :zone, :helper, :cgroup, :rpfilter, :condition, :name, :notrack, :nfacct,
   ]
 
   def insert
