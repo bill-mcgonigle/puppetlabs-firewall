@@ -922,10 +922,11 @@ Puppet::Type.newtype(:firewall) do
     end
   end
 
-  newproperty(:nfacct, required_features: :nfacct) do
+  newproperty(:nfacct, required_features: :iptables) do
     desc <<-PUPPETCODE
       Increment count of matching packets for object names configured in nfacct(8).
     PUPPETCODE
+    newvalues(%r{^[a-zA-Z0-9\-\._\+]+$})
   end
 
   # ICMP matching property
